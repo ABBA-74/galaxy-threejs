@@ -201,7 +201,7 @@ const initScene = () => {
   // créez un objet textureLoader
   const textureLoader = new THREE.TextureLoader();
   sun = createPlanete(16, 'sun', sunTexture, 0, false, true);
-  mercury = createPlanete(2.6, 'mercure', mercuryTexture, 28);
+  mercury = createPlanete(2.6, 'mercury', mercuryTexture, 28);
   venus = createPlanete(5.3, 'venus', venusTexture, 44);
   earth = createPlanete(6, 'earth', earthTexture, 78);
 
