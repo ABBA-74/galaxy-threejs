@@ -12,6 +12,7 @@ import sunTexture from './assets/img/sun.jpg';
 import mercuryTexture from './assets/img/mercury.jpg';
 import venusTexture from './assets/img/venus.jpg';
 import earthTexture from './assets/img/earth.jpg';
+import cloudTexture from './assets/img/fair_clouds.png';
 import moonTexture from './assets/img/moon.jpg';
 import marsTexture from './assets/img/mars.jpg';
 import jupiterTexture from './assets/img/jupiter.jpg';
@@ -154,7 +155,7 @@ const createPlanete = (
   const coord = randPosition(position);
   mesh.position.x = coord.x;
   mesh.position.z = coord.z;
-  mesh.name = texture.split('/')[3].slice(0, -4);
+  mesh.name = texture.split('/')[3]?.slice(0, -4);
   // console.log(mesh.name);
   // console.log(coord, mesh.name);
   obj.add(mesh);
@@ -194,7 +195,7 @@ const initScene = () => {
   cloud = new THREE.Mesh(
     new THREE.SphereGeometry(6.1, 32, 32),
     new THREE.MeshPhongMaterial({
-      map: textureLoader.load('./assets/img/fair_clouds.png'),
+      map: textureLoader.load(cloudTexture),
       transparent: true,
     })
   );
