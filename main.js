@@ -1,8 +1,8 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import * as THREE from '/node_modules/three';
+import { OrbitControls } from '/node_modules/three/examples/jsm/controls/OrbitControls.js';
 import { infosPlanets } from './data';
+// import { Vite } from 'vite';
 
-console.log(infosPlanets);
 let idIntervalMsgInfosPlanets = 0;
 let idTimeOut = 0;
 let currentIndex = 0;
@@ -23,7 +23,7 @@ import uranusRingTexture from './assets/img/uranus-ring.png';
 import neptuneTexture from './assets/img/neptune.jpg';
 import plutoTexture from './assets/img/pluto.jpg';
 
-import sunImg from './assets/img/sm_moon.png';
+import sunImg from './assets/img/sm_sun.png';
 import mercuryImg from './assets/img/sm_mercury.png';
 import venusImg from './assets/img/sm_venus.png';
 import earthImg from './assets/img/sm_earth.png';
@@ -34,6 +34,19 @@ import saturnImg from './assets/img/sm_saturn.png';
 import uranusImg from './assets/img/sm_uranus.png';
 import neptuneImg from './assets/img/sm_neptune.png';
 import plutoImg from './assets/img/sm_pluto.png';
+const pathImg = {
+  sunImg,
+  mercuryImg,
+  venusImg,
+  earthImg,
+  moonImg,
+  marsImg,
+  jupiterImg,
+  saturnImg,
+  uranusImg,
+  neptuneImg,
+  plutoImg,
+};
 
 const cardBottomInfo = document.querySelector('.card-bottom__info');
 const cardBottomDescription = document.querySelector(
@@ -131,6 +144,7 @@ const randPosition = (position) => {
 
 const createPlanete = (
   size,
+  namePlanet,
   texture,
   position,
   ring = false,
@@ -155,9 +169,8 @@ const createPlanete = (
   const coord = randPosition(position);
   mesh.position.x = coord.x;
   mesh.position.z = coord.z;
-  mesh.name = texture.split('/')[3]?.slice(0, -4);
-  // console.log(mesh.name);
-  // console.log(coord, mesh.name);
+  // mesh.name = texture.split('/')[-1]?.slice(0, -4);
+  mesh.name = namePlanet;
   obj.add(mesh);
 
   if (ring) {
@@ -187,10 +200,10 @@ const createPlanete = (
 const initScene = () => {
   // créez un objet textureLoader
   const textureLoader = new THREE.TextureLoader();
-  sun = createPlanete(16, sunTexture, 0, false, true);
-  mercury = createPlanete(2.6, mercuryTexture, 28);
-  venus = createPlanete(5.3, venusTexture, 44);
-  earth = createPlanete(6, earthTexture, 78);
+  sun = createPlanete(16, 'sun', sunTexture, 0, false, true);
+  mercury = createPlanete(2.6, 'mercure', mercuryTexture, 28);
+  venus = createPlanete(5.3, 'venus', venusTexture, 44);
+  earth = createPlanete(6, 'earth', earthTexture, 78);
 
   cloud = new THREE.Mesh(
     new THREE.SphereGeometry(6.1, 32, 32),
@@ -201,22 +214,22 @@ const initScene = () => {
   );
   earth.mesh.add(cloud);
 
-  moon = createPlanete(1.2, moonTexture, 11);
+  moon = createPlanete(1.2, 'moon', moonTexture, 11);
   earth.mesh.add(moon.mesh);
-  mars = createPlanete(3.2, marsTexture, 118);
-  jupiter = createPlanete(11, jupiterTexture, 150);
-  saturn = createPlanete(9, saturnTexture, 198, {
+  mars = createPlanete(3.2, 'mars', marsTexture, 118);
+  jupiter = createPlanete(11, 'jupiter', jupiterTexture, 150);
+  saturn = createPlanete(9, 'saturn', saturnTexture, 198, {
     innerRadius: 12.2,
     outerRadius: 21,
     texture: saturnRingTexture,
   });
-  uranus = createPlanete(8, uranusTexture, 262, {
+  uranus = createPlanete(8, 'uranus', uranusTexture, 262, {
     innerRadius: 9.5,
     outerRadius: 12,
     texture: uranusRingTexture,
   });
-  neptune = createPlanete(7, neptuneTexture, 310);
-  pluto = createPlanete(3, plutoTexture, 334);
+  neptune = createPlanete(7, 'neptune', neptuneTexture, 310);
+  pluto = createPlanete(3, 'pluto', plutoTexture, 334);
 
   // Point Light
   const pointLight = new THREE.PointLight(0xffffff, 1.4, 600);
@@ -259,14 +272,9 @@ function animate() {
 
   controls.update();
   renderer.render(scene, camera);
-  // console.log(scene.children);
   let planets = scene.children.filter(
-    (el) =>
-      // el.type == 'Object3D' &&
-      el.children.length > 0 && el.children[0].name != ''
+    (el) => el.children.length > 0 && el.children[0].name != ''
   );
-  // console.log(planets[9].children[0].name);
-  // console.log(planets);
 }
 
 renderer.setAnimationLoop(animate);
@@ -277,9 +285,8 @@ const getPlaneteSelected = () => {
   const intersects = raycaster.intersectObjects(scene.children);
 
   for (let i = 0; i < intersects.length; i++) {
-    // const element = array[i];
-    console.log(intersects[i].object.name);
-    if (intersects[i].object.name.length > 0) {
+    // console.log(intersects[i].object.name);
+    if (intersects[i].object.name?.length > 0) {
       planetSelected = intersects[i].object.name;
 
       // case sun selected and card already displayed => return
@@ -289,13 +296,6 @@ const getPlaneteSelected = () => {
       return;
     }
   }
-
-  // planetSelected = intersects.filter((el) => {
-  //   el.object.name.length > 0;
-  //   console.log(el.object.name.length > 0);
-  // });
-  console.log('selected >>>', intersects);
-  console.log('planet selected >>>', planetSelected);
 };
 
 const handleDisplayCard = (planetSelected) => {
@@ -313,6 +313,8 @@ const handleDisplayCard = (planetSelected) => {
   const cardTopImgPlanetEl = document.querySelector('.card-top__img');
 
   cardTopImgPlanetEl.src = `./assets/img/sm_${planetSelected}.png`;
+  // cardTopImgPlanetEl.src = eval(planetSelected + 'Img');
+  cardTopImgPlanetEl.src = pathImg[planetSelected + 'Img'];
 
   cardTopImgPlanetEl.classList.remove('active');
   setTimeout(() => {
@@ -346,7 +348,6 @@ const handleInfosPlanets = (planetSelected, currentIndex) => {
   for (const planet in infosPlanets) {
     if (planet == planetSelected) {
       dataPlanetSelected = infosPlanets[planet];
-      console.log('///', dataPlanetSelected.size);
     }
   }
   const labels = [
@@ -391,10 +392,8 @@ const handleInfosPlanets = (planetSelected, currentIndex) => {
 const onPointerClick = (e) => {
   // calculate pointer position in normalized device coordinates
   // (-1 to +1) for both components
-
   mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-  console.log(mouse.x, mouse.y);
   getPlaneteSelected();
 };
 
@@ -417,7 +416,6 @@ window.addEventListener('resize', () => {
   const cardEl = document.querySelector('.card');
   cardEl.classList.remove('active');
 
-  console.log([window.innerWidth, window.innerHeight]);
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
