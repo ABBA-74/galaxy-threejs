@@ -241,6 +241,7 @@ body {
 @media screen and (orientation: landscape) {
   .card {
     height: 280px;
+    transform: translate(-50%, -60%);
   }
   .card-top {
     position: relative;
