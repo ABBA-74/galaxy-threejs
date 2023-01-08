@@ -1,4 +1,3 @@
-/* import inter font family */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;800&display=swap');
 
 :root {
@@ -35,6 +34,37 @@ body {
   font-size: 1rem;
 }
 
+/** Progress Bar **/
+
+.container-progress-bar {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.936);
+}
+.container-progress-bar label,
+.container-progress-bar #progress-bar-value {
+  padding-bottom: 0.3rem;
+  font-size: 1.2rem;
+  text-shadow: 0 2px 2px #000000;
+}
+.container-progress-bar progress {
+  width: 16rem;
+}
+.container-progress-bar #progress-bar-value {
+  font-weight: 800;
+  color: #1d75dc;
+}
+
+/**  Card of planet details **/
+
 .wrapper {
   height: 100%;
   width: 100%;
@@ -42,10 +72,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* width: calc(100% - 2rem); */
-  /* max-width: 96%; */
   margin: auto;
-  /* padding-inline: 2rem; */
 }
 .card {
   position: absolute;
@@ -69,15 +96,15 @@ body {
   transition: opacity 0.5s ease-out;
 }
 .card::after {
-  border-radius: var(--brad-lg);
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(0deg, #ff6a0036, #00000091);
+  background: linear-gradient(45deg, #ff6a0036, #00000091);
   z-index: -5;
+  border-radius: 0.3rem;
 }
 
 .card.active {
@@ -86,6 +113,7 @@ body {
 
 .btn-close-card {
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   position: absolute;
   top: 0.7rem;
   right: 0.7rem;
@@ -105,6 +133,9 @@ body {
   box-shadow: inset -2px -2px 2px rgba(206, 206, 206, 0.24),
     inset 2px 2px 2px rgba(53, 53, 53, 0.46);
 }
+.btn-close-card:focus {
+  outline-style: none;
+}
 .card-top {
   position: relative;
   top: 1.1rem;
@@ -113,7 +144,7 @@ body {
   justify-content: center;
   flex-direction: column;
   width: 86%;
-  height: 72%;
+  height: 67%;
   margin-top: 1.6rem;
   margin-inline: auto;
   z-index: 10;
@@ -152,7 +183,7 @@ body {
   justify-content: center;
   height: 100%;
   width: 100%;
-  padding-top: 4rem;
+  padding-top: 6rem;
   overflow: hidden;
 }
 
@@ -232,6 +263,7 @@ body {
 }
 
 /** Media screen **/
+
 @media screen and (max-width: 800px) {
   .card-top__img {
     transform: scale(0.3) translateX(-16rem);
@@ -249,8 +281,11 @@ body {
     height: 52%;
   }
   .card-top__header-title {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     margin-block: 0.5rem;
+  }
+  .card-top__img-container {
+    padding-top: 3rem;
   }
   .card-top__img {
     width: 50px;

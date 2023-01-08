@@ -6,10 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Galaxy ThreeJs</title>
     <link rel="stylesheet" href="style.css" />
+    <script type="module" src="/main.js" defer></script>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/main.js"></script>
+    <div class="container-progress-bar">
+      <label for="progress-bar">Loading...</label>
+      <progress id="progress-bar" value="0" max="100"></progress>
+      <p id="progress-bar-value"></p>
+    </div>
     <div class="wrapper">
       <div class="card">
         <button class="btn-close-card"></button>

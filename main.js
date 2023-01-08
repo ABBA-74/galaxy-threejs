@@ -71,6 +71,38 @@ const btnCloseCardEl = document.querySelector('.btn-close-card');
 mouse = new THREE.Vector2();
 raycaster = new THREE.Raycaster();
 
+// const loadingManager = new THREE.loadingManager();
+
+// loadingManager.onStart = function (url, item, total) {
+//   console.log(url, item, total);
+// };
+
+/** Handle loader **/
+
+const containerProgressBar = document.querySelector('.container-progress-bar');
+const progressBarValue = document.getElementById('progress-bar-value');
+
+const progressBar = document.getElementById('progress-bar');
+
+THREE.DefaultLoadingManager.onProgress = function (
+  url,
+  itemsLoaded,
+  itemsTotal
+) {
+  progressBar.value = (itemsLoaded / itemsTotal) * 100;
+  progressBarValue.textContent = Math.floor(progressBar.value) + '%';
+};
+
+THREE.DefaultLoadingManager.onLoad = function () {
+  containerProgressBar.style.display = 'none';
+};
+
+THREE.DefaultLoadingManager.onError = function (url) {
+  console.log('There was an error loading ' + url);
+};
+
+/** init scene + orbitcontrols **/
+
 const init = () => {
   renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -88,14 +120,14 @@ const init = () => {
     0.1,
     8000
   );
-  // Création OrbitControls avec camera + renderer
+  // Creation OrbitControls with camera + renderer
   controls = new OrbitControls(camera, renderer.domElement);
-  // Activation l'amortissement de la rotation + réglage la vitesse
+  // Activation of damping (l'amortissement de la rotation + réglage la vitesse)
   controls.enableDamping = true;
   // controls.damping = 0.4;
   controls.dampingFactor = 0.5;
 
-  // Définition des paramètres vitesse - rotation - zoom - pan
+  // Definition of speed / rotation / zoom / pan parameters
   controls.autoRotate = true;
   controls.autoRotateSpeed = -0.069; // 30
   controls.rotateSpeed = 0.3;
@@ -113,13 +145,12 @@ const init = () => {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.85, 10);
   scene.add(ambientLight);
 
-  // creation d'un objet textureLoader
+  // creation of textureLoader
   const textureLoader = new THREE.TextureLoader();
 
-  // chargement image de fond en tant que texture
+  // Loading background texture
   texture = textureLoader.load(starsTexture);
   scene.background = texture;
-  // creation d'un matériau à partir de la texture
   const material = new THREE.MeshBasicMaterial({
     map: texture,
     side: THREE.DoubleSide,
@@ -127,13 +158,13 @@ const init = () => {
 
   const geometry = new THREE.SphereGeometry(7500, 32, 32);
   const mesh = new THREE.Mesh(geometry, material);
-  // inversion des faces du maillage pour qu'elles soient visibles de l'intérieur
+  // (inversion des faces du maillage pour qu'elles soient visibles de l'intérieur)
   mesh.scale.x = -1;
 
-  // ajout de l'objet Mesh background à la scène
   scene.add(mesh);
 };
 
+/** Function used to generate random positions for all planets after reloading **/
 const randPosition = (position) => {
   let randAngle = Math.random() * Math.PI * 2;
   let positionX = Math.cos(randAngle) * position;
@@ -197,14 +228,14 @@ const createPlanete = (
   return { mesh, obj, ringMesh };
 };
 
+/** Function which define all planets + cloud + light for the scene **/
 const initScene = () => {
-  // créez un objet textureLoader
-  const textureLoader = new THREE.TextureLoader();
   sun = createPlanete(16, 'sun', sunTexture, 0, false, true);
   mercury = createPlanete(2.6, 'mercury', mercuryTexture, 28);
   venus = createPlanete(5.3, 'venus', venusTexture, 44);
   earth = createPlanete(6, 'earth', earthTexture, 78);
 
+  const textureLoader = new THREE.TextureLoader();
   cloud = new THREE.Mesh(
     new THREE.SphereGeometry(6.1, 32, 32),
     new THREE.MeshPhongMaterial({
@@ -279,6 +310,7 @@ function animate() {
 
 renderer.setAnimationLoop(animate);
 
+/** Function which return the planet selected with raycaster **/
 const getPlaneteSelected = () => {
   let planetSelected;
   raycaster.setFromCamera(mouse, camera);
@@ -298,6 +330,7 @@ const getPlaneteSelected = () => {
   }
 };
 
+/** function which handle the display of planet card (img + txt) **/
 const handleDisplayCard = (planetSelected) => {
   const cardHeaderTitleEl = document.querySelector('.card-top__header-title');
 
@@ -336,6 +369,7 @@ const handleDisplayCard = (planetSelected) => {
   // handle infos of planet selected: label + info
 };
 
+/** function which handle information + description of planet selected for the planet card **/
 const handleInfosPlanets = (planetSelected, currentIndex) => {
   // reset index + clear previous interval
   currentIndex = 0;
@@ -390,8 +424,6 @@ const handleInfosPlanets = (planetSelected, currentIndex) => {
 };
 
 const onPointerClick = (e) => {
-  // calculate pointer position in normalized device coordinates
-  // (-1 to +1) for both components
   mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
   getPlaneteSelected();
