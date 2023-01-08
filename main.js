@@ -1,11 +1,6 @@
 import * as THREE from '/node_modules/three';
 import { OrbitControls } from '/node_modules/three/examples/jsm/controls/OrbitControls.js';
 import { infosPlanets } from './data';
-// import { Vite } from 'vite';
-
-let idIntervalMsgInfosPlanets = 0;
-let idTimeOut = 0;
-let currentIndex = 0;
 
 import starsTexture from './assets/img/space-stars.jpg';
 import sunTexture from './assets/img/sun.jpg';
@@ -47,12 +42,13 @@ const pathImg = {
   neptuneImg,
   plutoImg,
 };
-
-const cardBottomInfo = document.querySelector('.card-bottom__info');
-const cardBottomDescription = document.querySelector(
-  '.card-bottom__description'
-);
-let scene, camera, renderer, controls, textureLoader, texture, mouse, raycaster;
+let currentIndex = 0;
+let idIntervalMsgInfosPlanets = 0;
+let timerSetActiveContentCard,
+  timerSetActiveCard,
+  timerSetActiveImg,
+  timerSetActiveTitle;
+let scene, camera, renderer, controls, texture;
 let sun,
   mercury,
   venus,
@@ -65,17 +61,15 @@ let sun,
   uranus,
   neptune,
   pluto;
+let mouse = new THREE.Vector2();
+let raycaster = new THREE.Raycaster();
+
+const cardBottomInfo = document.querySelector('.card-bottom__info');
+const cardBottomDescription = document.querySelector(
+  '.card-bottom__description'
+);
 const cardEl = document.querySelector('.card');
 const btnCloseCardEl = document.querySelector('.btn-close-card');
-
-mouse = new THREE.Vector2();
-raycaster = new THREE.Raycaster();
-
-// const loadingManager = new THREE.loadingManager();
-
-// loadingManager.onStart = function (url, item, total) {
-//   console.log(url, item, total);
-// };
 
 /** Handle loader **/
 
@@ -101,8 +95,7 @@ THREE.DefaultLoadingManager.onError = function (url) {
   console.log('There was an error loading ' + url);
 };
 
-/** init scene + orbitcontrols **/
-
+/** Init scene + orbitcontrols **/
 const init = () => {
   renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -145,7 +138,7 @@ const init = () => {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.85, 10);
   scene.add(ambientLight);
 
-  // creation of textureLoader
+  // Creation of textureLoader
   const textureLoader = new THREE.TextureLoader();
 
   // Loading background texture
@@ -173,6 +166,7 @@ const randPosition = (position) => {
   return { x: positionX, z: positionY };
 };
 
+/** Function used to create a planet mesh + obj + ring if necessary**/
 const createPlanete = (
   size,
   namePlanet,
@@ -321,7 +315,7 @@ const getPlaneteSelected = () => {
     if (intersects[i].object.name?.length > 0) {
       planetSelected = intersects[i].object.name;
 
-      // case sun selected and card already displayed => return
+      // Case sun selected and card already displayed => return
       if (planetSelected == 'sun' && cardEl.classList.contains('active'))
         return;
       handleDisplayCard(planetSelected);
@@ -330,54 +324,55 @@ const getPlaneteSelected = () => {
   }
 };
 
-/** function which handle the display of planet card (img + txt) **/
+/************************************************************* */
+/** Function which handle the display of planet card (img + txt) **/
 const handleDisplayCard = (planetSelected) => {
   const cardHeaderTitleEl = document.querySelector('.card-top__header-title');
 
-  // reset infos of the bottom card
+  // Reset infos of the bottom card
   [cardBottomInfo, cardBottomDescription].forEach(
     (el) => (el.textContent = '')
   );
 
-  // display card
-  cardEl.classList.add('active');
+  // Display card
+  cardEl.style.display = 'block';
+  // Added timeout to preserve effect of opacity when card displayed
+  timerSetActiveCard = setTimeout(() => {
+    cardEl.classList.add('active');
+  }, 20);
 
-  // display planet png according planet selected
+  // Display planet png according planet selected
   const cardTopImgPlanetEl = document.querySelector('.card-top__img');
-
   cardTopImgPlanetEl.src = `./assets/img/sm_${planetSelected}.png`;
   // cardTopImgPlanetEl.src = eval(planetSelected + 'Img');
   cardTopImgPlanetEl.src = pathImg[planetSelected + 'Img'];
 
   cardTopImgPlanetEl.classList.remove('active');
-  setTimeout(() => {
+  timerSetActiveImg = setTimeout(() => {
     cardTopImgPlanetEl.classList.add('active');
   }, 300);
 
-  // change title of card
+  // Change title of card
   cardHeaderTitleEl.classList.remove('active');
   [cardBottomInfo, cardBottomDescription].forEach((el) =>
     el.classList.remove('active')
   );
   handleInfosPlanets(planetSelected, currentIndex);
 
-  setTimeout(() => {
+  timerSetActiveTitle = setTimeout(() => {
     cardHeaderTitleEl.innerText = planetSelected;
     cardHeaderTitleEl.classList.add('active');
-  }, 300);
-
-  // handle infos of planet selected: label + info
+  }, 450);
 };
 
-/** function which handle information + description of planet selected for the planet card **/
+/** Function which handle information + description of planet selected for the planet card **/
 const handleInfosPlanets = (planetSelected, currentIndex) => {
-  // reset index + clear previous interval
+  // Reset index + clear previous interval
   currentIndex = 0;
   clearInterval(idIntervalMsgInfosPlanets);
-  clearTimeout(idTimeOut);
+  clearTimeout(timerSetActiveContentCard);
 
   // Get data according to the planet selected
-  // const infos = infosPlanets;
   let dataPlanetSelected;
   for (const planet in infosPlanets) {
     if (planet == planetSelected) {
@@ -403,27 +398,21 @@ const handleInfosPlanets = (planetSelected, currentIndex) => {
     [cardBottomInfo, cardBottomDescription].forEach((el) =>
       el.classList.add('active')
     );
-    [cardBottomInfo, cardBottomDescription].forEach((el) =>
-      el.classList.remove('inactive')
-    );
     // cardBottomInfo.textContent = infosPlanets.items[currentIndex];
     cardBottomInfo.textContent = labels[currentIndex];
     cardBottomDescription.textContent =
       dataPlanetSelected[keysInfo[currentIndex]];
     // currentIndex = (currentIndex + 1) % infosPlanets.items.length;
     currentIndex = currentIndex > 3 ? 0 : currentIndex + 1;
-    idTimeOut = setTimeout(() => {
+    timerSetActiveContentCard = setTimeout(() => {
       [cardBottomInfo, cardBottomDescription].forEach((el) =>
         el.classList.remove('active')
-      );
-      [cardBottomInfo, cardBottomDescription].forEach((el) =>
-        el.classList.add('inactive')
       );
     }, 2300);
   }, 2600);
 };
 
-// calculate pointer position in normalized device coordinates
+// Calculate pointer position in normalized device coordinates
 // (-1 to +1) for both components
 const onPointerClick = (e) => {
   mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -434,30 +423,31 @@ const onPointerClick = (e) => {
 const handleCloseCard = () => {
   const cardEl = document.querySelector('.card');
   cardEl.classList.remove('active');
+
+  setTimeout(() => {
+    cardEl.style.display = 'none';
+  }, 500);
+
+  // Reset timeout + interval in case close card activated
+  clearTimeout(timerSetActiveCard);
+  clearTimeout(timerSetActiveTitle);
+  clearTimeout(timerSetActiveImg);
+  clearTimeout(timerSetActiveContentCard);
   clearInterval(idIntervalMsgInfosPlanets);
-  clearTimeout(idTimeOut);
 };
 
-// handle close card when btn close clicked
+// Handle close card when btn close clicked
 btnCloseCardEl.addEventListener('click', handleCloseCard);
 
-// pointer raycaster
+// Pointer raycaster
 window.addEventListener('click', onPointerClick, false);
 
 const handleResize = () => {
-  // remove card
+  // Remove card
   const cardEl = document.querySelector('.card');
   cardEl.classList.remove('active');
-  setTimeout(() => {
-    console.log(
-      'timeout >>> ',
-      'Width : ',
-      window.innerWidth,
-      'Height : ',
-      window.innerHeight
-    );
-  }, 300);
-  console.log(window.innerWidth, window.innerHeight);
+
+  // console.log(window.innerWidth, window.innerHeight);
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -465,6 +455,6 @@ const handleResize = () => {
   renderer.render(scene, camera);
 };
 
-// Resize Canvas
+// Events listener
 window.addEventListener('orientationchange', handleResize);
 window.addEventListener('resize', handleResize);

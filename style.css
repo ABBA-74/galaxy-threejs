@@ -75,11 +75,12 @@ body {
   margin: auto;
 }
 .card {
+  display: block;
   position: absolute;
   user-select: none;
   top: 50vh;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -49%);
   background-color: black;
   background: url('./assets/img/card-bkg.png');
   background-repeat: no-repeat;
@@ -89,11 +90,11 @@ body {
   width: clamp(20rem, 98%, 28.9rem);
   border-radius: var(--brad-lg);
   outline: 2px ridge rgba(25, 121, 255, 0.227);
-  border: 9px solid rgba(255, 255, 255, 0.081);
+  border: 6px solid rgba(255, 255, 255, 0.081);
   box-shadow: var(--bx-shadow-sm);
   z-index: 5;
   opacity: 0;
-  transition: opacity 0.5s ease-out;
+  transition: opacity 0.35s ease-out, transform 0.35s ease-out;
 }
 .card::after {
   content: '';
@@ -109,24 +110,25 @@ body {
 
 .card.active {
   opacity: 1;
+  transform: translate(-50%, -50%);
 }
 
 .btn-close-card {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   position: absolute;
-  top: 0.7rem;
-  right: 0.7rem;
-  height: 1.5rem;
-  width: 1.5rem;
+  top: 0.6rem;
+  right: 0.6rem;
+  height: 1.2rem;
+  width: 1.2rem;
   border-radius: 3rem;
   border: none;
   box-shadow: var(--bx-shadow-lg);
   background-color: var(--clr-secondary);
-  opacity: 0.71;
+  opacity: 0.91;
   box-shadow: inset 3px 3px 3px rgba(206, 206, 206, 0.56),
     inset -3px -3px 3px rgba(53, 53, 53, 0.46);
-  transition: opacity 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: opacity 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 .btn-close-card:hover {
   opacity: 1;
