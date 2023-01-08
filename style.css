@@ -35,7 +35,6 @@ body {
 }
 
 /** Progress Bar **/
-
 .container-progress-bar {
   position: fixed;
   top: 50%;
@@ -64,7 +63,6 @@ body {
 }
 
 /**  Card of planet details **/
-
 .wrapper {
   height: 100%;
   width: 100%;
@@ -75,7 +73,7 @@ body {
   margin: auto;
 }
 .card {
-  display: block;
+  display: none;
   position: absolute;
   user-select: none;
   top: 50vh;
@@ -91,7 +89,8 @@ body {
   border-radius: var(--brad-lg);
   outline: 2px ridge rgba(25, 121, 255, 0.227);
   border: 6px solid rgba(255, 255, 255, 0.081);
-  box-shadow: var(--bx-shadow-sm);
+  box-shadow: var(--bx-shadow-sm), inset -3px -3px 3px #01183263,
+    inset 3px 3px 3px #011120bf;
   z-index: 5;
   opacity: 0;
   transition: opacity 0.35s ease-out, transform 0.35s ease-out;
@@ -265,7 +264,6 @@ body {
 }
 
 /** Media screen **/
-
 @media screen and (max-width: 800px) {
   .card-top__img {
     transform: scale(0.3) translateX(-16rem);
@@ -274,7 +272,7 @@ body {
 
 @media screen and (orientation: landscape) {
   .card {
-    height: 280px;
+    height: 290px;
     transform: translate(-50%, -60%);
   }
   .card-top {
