@@ -423,6 +423,8 @@ const handleInfosPlanets = (planetSelected, currentIndex) => {
   }, 2600);
 };
 
+// calculate pointer position in normalized device coordinates
+// (-1 to +1) for both components
 const onPointerClick = (e) => {
   mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -442,15 +444,27 @@ btnCloseCardEl.addEventListener('click', handleCloseCard);
 // pointer raycaster
 window.addEventListener('click', onPointerClick, false);
 
-// Resize Canvas
-window.addEventListener('resize', () => {
+const handleResize = () => {
   // remove card
   const cardEl = document.querySelector('.card');
   cardEl.classList.remove('active');
-
+  setTimeout(() => {
+    console.log(
+      'timeout >>> ',
+      'Width : ',
+      window.innerWidth,
+      'Height : ',
+      window.innerHeight
+    );
+  }, 300);
+  console.log(window.innerWidth, window.innerHeight);
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.render(scene, camera);
-});
+};
+
+// Resize Canvas
+window.addEventListener('orientationchange', handleResize);
+window.addEventListener('resize', handleResize);
